@@ -73,7 +73,7 @@ def pack(root, endianness, level, outname):
             print(f"Repacking {filename}")
             
             if filename == "timg/__Combined.bntx":
-                print("Writing file. Please wait. This step takes the longest (5-10 seconds).")
+                print("Writing file. Please wait. This step takes the longest, and will happen a few times due to strict compression.")
 
             fullname = ''.join([root, "/", filename])
 
