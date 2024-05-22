@@ -7,7 +7,6 @@ from customtkinter import *
 from threading import Thread
 import shutil
 from download import download_extract_copy
-from patch import create_patch_files
 import getpass
 from script import patch_blarc
 from PIL import Image
@@ -25,9 +24,6 @@ from pathlib import Path
 import sys
 import shutil
 import psutil
-from visuals import create_visuals
-from decompress import decompress_zstd
-from compress import compress_zstd
 from repack import *
 from extract import extract_blarc
 from functions import *
@@ -40,12 +36,12 @@ import pyautogui
 tool_version = "1.0.0"
 
 root = customtkinter.CTk()
-root.title(f"Fayaz's Settings {tool_version} for Nintendo Switch Sports")
+root.title(f"Fayaz's Settings {tool_version} for Nintendo Switch Home Menu")
 root.geometry("540x830")
 
 customtkinter.set_appearance_mode("system")
 customtkinter.set_default_color_theme("blue")  
-windowtitle = customtkinter.CTkLabel(master=root, font=(CTkFont, 20), text="Fayaz's NSS Utility {tool_version}")
+windowtitle = customtkinter.CTkLabel(master=root, font=(CTkFont, 20), text="Fayaz's Home Menu Utility {tool_version}")
 
 ###############################################
 ###########    GLOBAL SETTINGS      ###########
@@ -256,7 +252,7 @@ def select_mario_folder():
     ratio_value = (int(numerator_entry.get()) / int(denominator_entry.get()))
     scaling_factor = (16/9) / (int(numerator_entry.get()) / int(denominator_entry.get()))
     username = getpass.getuser()
-    gameid = "0100D2F00D5C0000"
+    gameid = "0100000000001000"
     if output_yuzu.get() is True:
         input_folder = f"C:/Users/{username}/AppData/Roaming/yuzu/load/{gameid}"
         process_name = "yuzu.exe"
@@ -280,8 +276,8 @@ def select_mario_folder():
         print("Select an emulator or output folder.")
         return
     text_folder = os.path.join(input_folder, mod_name)
-    patch_folder = os.path.join(input_folder, mod_name, "exefs")
     romfs_folder = os.path.join(input_folder, mod_name, "romfs")
+    lyt_folder = os.path.join(romfs_folder, "lyt")
     if corner_HUD.get() == True:
         print("Corner HUD")
         HUD_pos = "corner"
@@ -296,38 +292,19 @@ def select_mario_folder():
     if os.path.exists(text_folder):
         shutil.rmtree(text_folder)
 
-    # ################
-    # ### Patching ###
-    # ################
-    
-    # visual_fixes = create_visuals(do_screenshot.get(), do_disable_fxaa.get(), do_disable_dynamicres.get())
-    # create_patch_files(patch_folder, str(ratio_value), str(scaling_factor), visual_fixes, do_disable_bloom.get())
-
     #################
     ## Downloading ##
     #################
 
-    download_extract_copy(input_folder, mod_name)
-
-    #################
-    # ZS Extraction #
-    #################
-
-    for root, _, files in os.walk(romfs_folder):
-        for file in files:
-            if file.lower().endswith(".zs"):
-                file_path = os.path.join(root, file)
-                print(f"Extracting {file}.")
-                decompress_zstd(file_path)
-                os.remove(file_path)
+    download_extract_copy(text_folder)
 
     ####################
     # BLARC Extraction #
     ####################
 
-    for root, _, files in os.walk(romfs_folder):
+    for root, _, files in os.walk(lyt_folder):
         for file in files:
-            if file.lower().endswith(".blarc"):
+            if file.lower().endswith(".szs"):
                 file_path = os.path.join(root, file)
                 print(f"Extracting {file}.")
                 extract_blarc(file_path)
@@ -337,22 +314,21 @@ def select_mario_folder():
     # Perform Pane Strecthing #
     ###########################
 
-    patch_blarc(str(ratio_value), HUD_pos, romfs_folder, do_expirements.get())
+    patch_blarc(ratio_value, lyt_folder)
 
-    
+        
     ##########################
     # Cleaning and Repacking #
     ##########################
-    
+
     print("Repacking new blarc files. This step may take about 10 seconds")
-    for root, dirs, _ in os.walk(romfs_folder):
+    for root, dirs, _ in os.walk(lyt_folder):
         if "blyt" in dirs:
             parent_folder = os.path.dirname(root)
-            new_blarc_file = os.path.join(parent_folder, os.path.basename(root) + ".blarc")
+            new_blarc_file = os.path.join(parent_folder, os.path.basename(root) + ".szs")
             pack_folder_to_blarc(root, new_blarc_file)
             shutil.rmtree(root) 
-            compress_zstd(new_blarc_file)
-            os.remove(new_blarc_file)
+
 
     ##########################
     #          Finish        #
@@ -708,7 +684,7 @@ notebook.add("Credits")
 
 credits_label = ClickableLabel(master=notebook.tab("Credits"), text=
                     ('Utility created by fayaz\n'
-                     'https://github.com/fayaz12g/NSS-aar\n'
+                     'https://github.com/fayaz12g/home-aar\n'
                      'ko-fi.com/fayaz12\n'
                      '\nWith thanks to\n'
                      'fruithapje21\n'
