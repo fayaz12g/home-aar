@@ -49,7 +49,7 @@ def patch_blarc(aspect_ratio, folder):
     blyt_folder = os.path.abspath(os.path.join(folder))
     file_names_stripped = []
     
-    do_not_scale_rootpane = []
+    do_not_scale_rootpane = ["BaseBg", "BaseTop", "BlurBg2", "BaseBlurBg2", "FooterAll", "IconGame", "Footer"]
    
     rootpane_by_y = []
 
@@ -84,6 +84,7 @@ def patch_blarc(aspect_ratio, folder):
                 patch_blyt(name, 'RootPane', 'scale_y', 1/s1)
                 patch_blyt(name, 'RootPane', 'scale_x', 1)
 
+        patch_blyt("UserIconName", 'RootPane', 'shift_x', -200)
         
     else:
         s1 = aspect_ratio / (16/9)
