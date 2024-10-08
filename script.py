@@ -8,6 +8,53 @@ def patch_blarc(aspect_ratio, folder):
 
     file_paths = {}
 
+
+    layout_map = {
+                    'EntMain': ['N_CntL', 'N_Lock', 'N_CntR', 'N_AlarmChildLock', 'L_AlarmHud', 'P_AlarmBase', 'L_AlarmPageIndicator', 'L_AlarmGoEnt', 'L_AlarmBtnPagerR', 'L_AlarmBtnPagerL', 'L_BtnBack', 'L_Lock', 'N_AlarmCtrlResume', 'N_AlarmCtrlCntHud', 'N_News', 'N_AlarmCtrlNtf'],
+                    'RdtBase': ['N_ScrollArea', 'N_ScrollWindow', 'T_Blank', 'N_GameRoot', 'N_System', 'L_ChildLock', 'N_MyPage', 'L_Hud', 'L_BalloonCtrl', 
+                                # 'N_Icon_00', 'N_Icon_01', 'N_Icon_02', 'N_Icon_03', 'N_Icon_04', 'N_Icon_05', 'N_Icon_06', 'N_Icon_07', 'N_Icon_08', 'N_Icon_09', 'N_Icon_10', 'N_Icon_11', 'N_Icon_12', 'L_BtnChangeUser', 'L_BtnFlc',
+                                'L_BtnLR', 'L_BtnNoti', 'L_BtnShop', 'L_BtnPvr', 'L_BtnCtrl', 'L_BtnSet', 'L_BtnPow'],
+                }
+
+    def patch_ui_layouts(direction):
+        if direction == "x":
+            offset = 0x40
+        if direction == 'y':
+            offset = 0x48
+
+        for filename, panes in layout_map.items():
+            modified_name = filename + "_name"
+            paths = file_paths.get(modified_name, [])
+            
+            if not paths:
+                default_path = os.path.join(folder, "region_common", "ui", "GameMain", "blyt", f"{filename}.bflyt")
+                paths.append(default_path)
+            
+            for full_path_of_file in paths:
+                with open(full_path_of_file, 'rb') as f:
+                    content = f.read().hex()
+                
+                start_rootpane = content.index(b'RootPane'.hex())
+                
+                for pane in panes:
+                    pane_hex = pane.encode('utf-8').hex()
+                    start_pane = content.index(pane_hex, start_rootpane)
+                    idx = start_pane + offset 
+                    
+                    current_value_hex = content[idx:idx+8]
+                    current_value = hex2float(current_value_hex)
+                    
+                    new_value = (current_value * s1**-1)
+                    new_value_hex = float2hex(new_value)
+
+                    if pane == "L_SetItem_00" or pane == "L_SetItem_01" or pane == "L_SetItem_02" :
+                        print(pane, current_value, new_value)
+                    
+                    content = content[:idx] + new_value_hex + content[idx+8:]
+                
+                with open(full_path_of_file, 'wb') as f:
+                    f.write(bytes.fromhex(content))
+
     def patch_blyt(filename, pane, operation, value):
         if operation in ["scale_x", "scale_y"]:
             if value < 1:
@@ -49,7 +96,7 @@ def patch_blarc(aspect_ratio, folder):
     blyt_folder = os.path.abspath(os.path.join(folder))
     file_names_stripped = []
     
-    do_not_scale_rootpane = ["BaseBg", "BaseTop", "BlurBg2", "BaseBlurBg2", "FooterAll", "IconGame", "Footer"]
+    do_not_scale_rootpane = ["BaseBg", "BaseNml","RdtBg", "BaseTop", "BlurBg2", "BaseBlurBg2", "IconGame", "SystemAppletFader", "RdtBtnIconGame"]
    
     rootpane_by_y = []
 
@@ -84,8 +131,11 @@ def patch_blarc(aspect_ratio, folder):
                 patch_blyt(name, 'RootPane', 'scale_y', 1/s1)
                 patch_blyt(name, 'RootPane', 'scale_x', 1)
 
-        patch_blyt("UserIconName", 'RootPane', 'shift_x', -200)
-        
+        patch_blyt("RdtBase", 'L_BgNml', 'scale_x', 1/s1)
+        patch_ui_layouts('x')
+        patch_blyt("RdtBase", 'N_GameRoot', 'scale_x', 1/s1)
+        # patch_blyt("RdtBase", 'N_GameRoot', 'shift_x', -200)
+    
     else:
         s1 = aspect_ratio / (16/9)
         s2 = 1-s1

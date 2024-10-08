@@ -28,7 +28,7 @@ except ImportError:
     else:
         sys.exit(1)
 
-def pack_folder_to_blarc(folder_path, output_file):
+def pack_folder_to_blarc(folder_path, output_file, x):
     """
     Pack the files and folders in the folder_path to a .blarc output_file.
     """
@@ -36,9 +36,9 @@ def pack_folder_to_blarc(folder_path, output_file):
     endianness = '>'
     level = 9
 
-    pack(root, endianness, level, output_file)
+    pack(root, endianness, level, output_file, x)
 
-def pack(root, endianness, level, outname):
+def pack(root, endianness, level, outname, x):
     """
     Pack the files and folders in the root folder.
     """
@@ -74,6 +74,8 @@ def pack(root, endianness, level, outname):
             
             if filename == "timg/__Combined.bntx":
                 print("Writing file. Please wait. This step takes the longest, and will happen a few times due to strict compression.")
+                x = x + 1
+                print(f"({x}/12)")
 
             fullname = ''.join([root, "/", filename])
 

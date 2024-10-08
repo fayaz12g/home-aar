@@ -322,11 +322,12 @@ def select_mario_folder():
     ##########################
 
     print("Repacking new blarc files. This step may take about 10 seconds")
+    x = 0
     for root, dirs, _ in os.walk(lyt_folder):
         if "blyt" in dirs:
             parent_folder = os.path.dirname(root)
             new_blarc_file = os.path.join(parent_folder, os.path.basename(root) + ".szs")
-            pack_folder_to_blarc(root, new_blarc_file)
+            pack_folder_to_blarc(root, new_blarc_file, x)
             shutil.rmtree(root) 
 
 
