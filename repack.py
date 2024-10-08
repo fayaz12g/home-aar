@@ -74,7 +74,6 @@ def pack(root, endianness, level, outname, x):
             
             if filename == "timg/__Combined.bntx":
                 print("Writing file. Please wait. This step takes the longest, and will happen a few times due to strict compression.")
-                x = x + 1
                 print(f"({x}/12)")
 
             fullname = ''.join([root, "/", filename])

@@ -12,6 +12,7 @@ def patch_blarc(aspect_ratio, folder):
     layout_map = {
                     'EntMain': ['N_CntL', 'N_Lock', 'N_CntR', 'N_AlarmChildLock', 'L_AlarmHud', 'P_AlarmBase', 'L_AlarmPageIndicator', 'L_AlarmGoEnt', 'L_AlarmBtnPagerR', 'L_AlarmBtnPagerL', 'L_BtnBack', 'L_Lock', 'N_AlarmCtrlResume', 'N_AlarmCtrlCntHud', 'N_News', 'N_AlarmCtrlNtf'],
                     'RdtBase': ['N_ScrollArea', 'N_ScrollWindow', 'T_Blank', 'N_GameRoot', 'N_System', 'L_ChildLock', 'N_MyPage', 'L_Hud', 'L_BalloonCtrl', 
+                                'L_BtnAccount_00', 'L_BtnAccount_01', 'L_BtnAccount_02', 'L_BtnAccount_03', 'L_BtnAccount_04', 'L_BtnAccount_05', 'L_BtnAccount_06', 'L_BtnAccount_07',
                                 # 'N_Icon_00', 'N_Icon_01', 'N_Icon_02', 'N_Icon_03', 'N_Icon_04', 'N_Icon_05', 'N_Icon_06', 'N_Icon_07', 'N_Icon_08', 'N_Icon_09', 'N_Icon_10', 'N_Icon_11', 'N_Icon_12', 'L_BtnChangeUser', 'L_BtnFlc',
                                 'L_BtnLR', 'L_BtnNoti', 'L_BtnShop', 'L_BtnPvr', 'L_BtnCtrl', 'L_BtnSet', 'L_BtnPow'],
                 }
@@ -133,8 +134,7 @@ def patch_blarc(aspect_ratio, folder):
 
         patch_blyt("RdtBase", 'L_BgNml', 'scale_x', 1/s1)
         patch_ui_layouts('x')
-        patch_blyt("RdtBase", 'N_GameRoot', 'scale_x', 1/s1)
-        # patch_blyt("RdtBase", 'N_GameRoot', 'shift_x', -200)
+        patch_blyt("RdtBase", 'N_GameRoot', 'shift_x', -200)
     
     else:
         s1 = aspect_ratio / (16/9)
